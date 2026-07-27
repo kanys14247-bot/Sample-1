@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SakriGym – Forge Your Legacy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #DC0000;
+      --red-dark: #A00000;
+      --black: #080808;
+      --card: #131313;
+      --card2: #1C1C1C;
+      --white: #FFFFFF;
+      --gray: #AAAAAA;
+      --border: #2A2A2A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+    /* ── NAV ─────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 68px;
+      background: rgba(8,8,8,0.92); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--red); letter-spacing: 2px; text-decoration: none; }
+    .nav-logo span { color: var(--white); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { color: var(--gray); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; transition: color .2s; }
+    .nav-links a:hover { color: var(--red); }
+    .nav-cta { background: var(--red); color: var(--white); padding: 9px 22px; border-radius: 4px; font-size: 0.82rem; font-weight: 700; text-decoration: none; letter-spacing: 1px; transition: background .2s; }
+    .nav-cta:hover { background: var(--red-dark); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: .3s; }
+    .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: #0f0f0f; padding: 20px 5%; z-index: 998; border-bottom: 1px solid var(--border); }
+    .mobile-menu a { display: block; padding: 12px 0; color: var(--gray); text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+    .mobile-menu a:last-child { border: none; }
+    .mobile-menu.open { display: block; }
+
+    /* ── HERO ─────────────────────────────────────── */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; padding-top: 68px;
+      background: linear-gradient(135deg, #080808 0%, #140000 100%);
+    }
+    .hero-bg-lines {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(220,0,0,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(220,0,0,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-slash {
+      position: absolute; top: -10%; right: -5%;
+      width: 55%; height: 130%;
+      background: linear-gradient(135deg, transparent 0%, rgba(220,0,0,0.06) 100%);
+      transform: skewX(-12deg);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 860px; padding: 0 5%; }
+    .hero-eyebrow { font-size: 0.78rem; letter-spacing: 5px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 20px; }
+    .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 12vw, 9rem); line-height: 0.92; color: var(--white); margin-bottom: 8px; }
+    .hero-title .red { color: var(--red); }
+    .hero-sub { font-size: clamp(0.95rem, 2vw, 1.2rem); color: var(--gray); max-width: 520px; margin: 24px auto 40px; line-height: 1.7; }
+    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-red { background: var(--red); color: var(--white); padding: 14px 36px; border-radius: 4px; font-weight: 700; text-decoration: none; font-size: 0.9rem; letter-spacing: 1px; transition: background .2s, transform .15s; display: inline-block; }
+    .btn-red:hover { background: var(--red-dark); transform: translateY(-2px); }
+    .btn-outline { border: 1.5px solid var(--white); color: var(--white); padding: 14px 36px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: border-color .2s, color .2s; display: inline-block; }
+    .btn-outline:hover { border-color: var(--red); color: var(--red); }
+    .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--gray); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; animation: bounce 2s infinite; }
+    .hero-scroll-dot { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--red), transparent); }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+    /* ── STATS ─────────────────────────────────────── */
+    .stats-bar {
+      background: var(--red); padding: 20px 5%;
+      display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 10px;
+    }
+    .stat-item .num { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; color: var(--white); }
+    .stat-item .label { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+
+    /* ── MARQUEE ─────────────────────────────────────── */
+    .marquee-wrap { background: #0F0F0F; padding: 14px 0; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .marquee-track { display: flex; gap: 0; animation: marquee 24s linear infinite; white-space: nowrap; }
+    .marquee-track span { padding: 0 36px; font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gray); }
+    .marquee-track span.dot { color: var(--red); padding: 0 8px; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SECTION COMMON ─────────────────────────────── */
+    section { padding: 90px 5%; }
+    .section-eyebrow { font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 12px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.4rem, 5vw, 3.8rem); color: var(--white); line-height: 1; margin-bottom: 14px; }
+    .section-title span { color: var(--red); }
+    .section-sub { color: var(--gray); font-size: 0.95rem; line-height: 1.7; max-width: 540px; margin-bottom: 50px; }
+    .divider { width: 48px; height: 3px; background: var(--red); margin: 18px 0 24px; }
+
+    /* ── TIMING ─────────────────────────────────────── */
+    #timing { background: #0C0C0C; }
+    .timing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .timing-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 28px 24px; text-align: center; position: relative; overflow: hidden;
+      transition: border-color .2s;
+    }
+    .timing-card:hover { border-color: var(--red); }
+    .timing-card.highlight { border-color: var(--red); background: linear-gradient(135deg, #1a0000, var(--card)); }
+    .timing-day { font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 10px; }
+    .timing-hours { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--white); margin-bottom: 6px; }
+    .timing-note { font-size: 0.78rem; color: var(--gray); }
+
+    /* ── PLANS ─────────────────────────────────────── */
+    #plans { background: var(--black); }
+    .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+    .plan-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 36px 28px; position: relative; overflow: hidden; transition: transform .2s, border-color .2s;
+    }
+    .plan-card:hover { transform: translateY(-6px); border-color: var(--red); }
+    .plan-card.popular { border-color: var(--red); background: linear-gradient(160deg, #1a0000 0%, var(--card) 60%); }
+    .plan-badge { position: absolute; top: 18px; right: 18px; background: var(--red); color: var(--white); font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
+    .plan-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--white); margin-bottom: 6px; }
+    .plan-price { font-family: 'Bebas Neue', sans-serif; font-size: 3.2rem; color: var(--red); margin: 14px 0 4px; }
+    .plan-price small { font-size: 1rem; color: var(--gray); font-family: 'Inter', sans-serif; font-weight: 400; }
+    .plan-duration { font-size: 0.78rem; color: var(--gray); letter-spacing: 1px; margin-bottom: 24px; }
+    .plan-features { list-style: none; margin-bottom: 30px; }
+    .plan-features li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; color: var(--gray); }
+    .plan-features li span.chk { color: var(--red); font-weight: 700; }
+    .plan-cta { display: block; text-align: center; background: var(--red); color: var(--white); padding: 13px; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 0.88rem; letter-spacing: 1px; transition: background .2s; }
+    .plan-card:not(.popular) .plan-cta { background: transparent; border: 1.5px solid var(--border); }
+    .plan-card:not(.popular) .plan-cta:hover { border-color: var(--red); color: var(--red); }
+    .plan-card.popular .plan-cta:hover { background: var(--red-dark); }
+
+    /* ── TRAINERS ─────────────────────────────────── */
+    #trainers { background: #0C0C0C; }
+    .trainers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+    .trainer-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; transition: transform .25s, border-color .25s;
+    }
+    .trainer-card:hover { transform: translateY(-6px); border-color: var(--red); }
+    .trainer-img { width: 100%; height: 280px; object-fit: cover; display: block; filter: grayscale(30%); transition: filter .3s; }
+    .trainer-card:hover .trainer-img { filter: grayscale(0%); }
+    .trainer-body { padding: 22px 20px; }
+    .trainer-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--white); }
+    .trainer-title { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin: 4px 0 12px; }
+    .trainer-bio { font-size: 0.85rem; color: var(--gray); line-height: 1.65; }
+    .trainer-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .trainer-tags span { background: rgba(220,0,0,0.12); border: 1px solid rgba(220,0,0,0.3); color: var(--red); font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; }
+
+    /* ── TESTIMONIALS ─────────────────────────────── */
+    #testimonials { background: var(--black); }
+    .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .testi-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 30px 26px; position: relative; transition: border-color .2s;
+    }
+    .testi-card:hover { border-color: var(--red); }
+    .testi-quote { font-size: 3rem; color: var(--red); line-height: 0.5; margin-bottom: 16px; font-family: Georgia, serif; }
+    .testi-text { font-size: 0.9rem; color: var(--gray); line-height: 1.75; margin-bottom: 24px; font-style: italic; }
+    .testi-person { display: flex; align-items: center; gap: 14px; }
+    .testi-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--red); }
+    .testi-name { font-weight: 700; font-size: 0.9rem; color: var(--white); }
+    .testi-role { font-size: 0.75rem; color: var(--red); margin-top: 2px; }
+    .stars { color: var(--red); font-size: 0.85rem; margin-bottom: 14px; }
+
+    /* ── PRODUCTS ─────────────────────────────────── */
+    #products { background: #0C0C0C; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+    .product-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; transition: transform .2s, border-color .2s;
+    }
+    .product-card:hover { transform: translateY(-4px); border-color: var(--red); }
+    .product-img { width: 100%; height: 210px; object-fit: cover; display: block; }
+    .product-body { padding: 20px 18px; }
+    .product-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--white); margin-bottom: 6px; }
+    .product-benefit { font-size: 0.82rem; color: var(--gray); line-height: 1.6; margin-bottom: 14px; }
+    .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--red); margin-bottom: 14px; }
+    .product-price small { font-size: 0.9rem; color: var(--gray); font-family: 'Inter'; font-weight: 400; }
+    .btn-order { width: 100%; background: var(--red); color: var(--white); border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: background .2s; }
+    .btn-order:hover { background: var(--red-dark); }
+
+    /* ── ORDER MODAL ─────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card); border: 1px solid var(--red); border-radius: 12px;
+      padding: 36px 32px; max-width: 440px; width: 100%; position: relative;
+    }
+    .modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--white); margin-bottom: 6px; }
+    .modal .modal-prod { font-size: 0.8rem; color: var(--red); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+    .modal input { width: 100%; background: #1a1a1a; border: 1px solid var(--border); color: var(--white); padding: 12px 14px; border-radius: 6px; font-size: 0.9rem; margin-bottom: 14px; outline: none; transition: border-color .2s; font-family: 'Inter'; }
+    .modal input:focus { border-color: var(--red); }
+    .modal input::placeholder { color: #555; }
+    .modal-btns { display: flex; gap: 12px; margin-top: 8px; }
+    .btn-wa { flex: 1; background: #25D366; color: #fff; border: none; padding: 13px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; font-family: 'Inter'; }
+    .btn-cancel { flex: 0 0 auto; background: transparent; color: var(--gray); border: 1px solid var(--border); padding: 13px 18px; border-radius: 6px; cursor: pointer; font-family: 'Inter'; }
+    .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--gray); font-size: 1.4rem; cursor: pointer; }
+
+    /* ── PDF / WHY US ─────────────────────────────── */
+    #extras { background: var(--black); }
+    .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .pdf-box {
+      background: linear-gradient(135deg, #1a0000 0%, var(--card) 100%);
+      border: 1px solid var(--red); border-radius: 12px; padding: 40px 36px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .pdf-icon { font-size: 3rem; margin-bottom: 20px; }
+    .pdf-box h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--white); margin-bottom: 10px; }
+    .pdf-box p { color: var(--gray); font-size: 0.9rem; line-height: 1.7; margin-bottom: 26px; }
+    .btn-download { background: var(--red); color: var(--white); padding: 14px 30px; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 0.9rem; letter-spacing: 1px; display: inline-block; transition: background .2s; }
+    .btn-download:hover { background: var(--red-dark); }
+    .why-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 40px 36px; }
+    .why-box h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--white); margin-bottom: 26px; }
+    .why-item { display: flex; gap: 16px; margin-bottom: 22px; }
+    .why-icon { width: 42px; height: 42px; background: rgba(220,0,0,0.12); border: 1px solid rgba(220,0,0,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .why-text h4 { font-weight: 700; font-size: 0.92rem; color: var(--white); margin-bottom: 4px; }
+    .why-text p { font-size: 0.82rem; color: var(--gray); line-height: 1.6; }
+
+    /* ── MAP ─────────────────────────────────────── */
+    #map-section { background: #0C0C0C; }
+    .map-wrap { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    .map-wrap iframe { display: block; width: 100%; height: 380px; filter: grayscale(60%) invert(90%) contrast(90%); }
+    .map-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; color: var(--red); font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: gap .2s; }
+    .map-link:hover { gap: 16px; }
+
+    /* ── JOIN FORM ─────────────────────────────────── */
+    #join { background: linear-gradient(135deg, #0a0000 0%, #080808 100%); border-top: 1px solid var(--border); }
+    .join-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+    .join-left h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); color: var(--white); line-height: 1; }
+    .join-left h2 span { color: var(--red); }
+    .join-left p { color: var(--gray); margin-top: 18px; line-height: 1.75; font-size: 0.95rem; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: var(--card); border: 1px solid var(--border);
+      color: var(--white); padding: 13px 16px; border-radius: 6px; font-size: 0.9rem;
+      outline: none; transition: border-color .2s; font-family: 'Inter'; resize: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--red); }
+    .form-group select option { background: #1a1a1a; }
+    .btn-send-wa { width: 100%; background: #25D366; color: #fff; border: none; padding: 15px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; cursor: pointer; letter-spacing: 1px; transition: background .2s; font-family: 'Inter'; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-send-wa:hover { background: #1DAA57; }
+
+    /* ── INSTAGRAM ─────────────────────────────────── */
+    .insta-bar {
+      background: linear-gradient(90deg, #833AB4, #FD1D1D, #F77737);
+      padding: 22px 5%; display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap;
+    }
+    .insta-bar p { color: #fff; font-weight: 600; font-size: 1rem; }
+    .btn-insta { background: #fff; color: #c13584; padding: 10px 24px; border-radius: 30px; font-weight: 700; text-decoration: none; font-size: 0.88rem; transition: opacity .2s; }
+    .btn-insta:hover { opacity: 0.88; }
+
+    /* ── FOOTER ─────────────────────────────────────── */
+    footer {
+      background: #050505; border-top: 1px solid var(--border);
+      padding: 36px 5%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--red); }
+    .footer-logo span { color: var(--gray); }
+    .footer-copy { font-size: 0.8rem; color: #444; }
+    .nexus-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 30px;
+      padding: 7px 14px; text-decoration: none; transition: border-color .2s;
+    }
+    .nexus-badge:hover { border-color: var(--red); }
+    .nexus-badge span { font-size: 0.75rem; color: var(--gray); }
+    .nexus-badge strong { font-size: 0.75rem; color: var(--white); }
+    .nexus-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── SCROLL ANIMATIONS ─────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .stats-bar { grid-template-columns: repeat(2,1fr); }
+      .extras-grid, .join-grid { grid-template-columns: 1fr; }
+      .extras-grid .pdf-box { order: -1; }
+      nav { padding: 0 4%; }
+      section { padding: 70px 4%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────── -->
+<nav>
+  <a href="#hero" class="nav-logo">Niwara Gym <span>by V3 Fitness</span></a>
+  <ul class="nav-links">
+    <li><a href="#plans">Plans</a></li>
+    <li><a href="#trainers">Trainers</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#map-section">Location</a></li>
+  </ul>
+  <a href="#join" class="nav-cta">JOIN NOW</a>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#plans" onclick="toggleMenu()">Plans</a>
+  <a href="#trainers" onclick="toggleMenu()">Trainers</a>
+  <a href="#products" onclick="toggleMenu()">Products</a>
+  <a href="#map-section" onclick="toggleMenu()">Location</a>
+  <a href="#join" onclick="toggleMenu()">Join Now</a>
+</div>
+
+<!-- ── HERO ──────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg-lines"></div>
+  <div class="hero-slash"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">📍 pune, Maharashtra</p>
+    <h1 class="hero-title">FORGE <br /><span class="red">YOUR</span><br />LEGEND</h1>
+    <p class="hero-sub">Welcome to Niwara Gym — where ordinary people build extraordinary bodies. Sweat more. Doubt less.</p>
+    <div class="hero-btns">
+      <a href="#join" class="btn-red">Start Today</a>
+      <a href="#plans" class="btn-outline">See Plans</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-dot"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ── STATS ──────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="num" data-target="450">0</div>
+    <div class="label">Active Members</div>
+  </div>
+  <div class="stat-item">
+    <div class="num" data-target="6">0</div>
+    <div class="label">Expert Trainers</div>
+  </div>
+  <div class="stat-item">
+    <div class="num" data-target="8">0</div>
+    <div class="label">Years Running</div>
+  </div>
+  <div class="stat-item">
+    <div class="num" data-target="1200">0</div>
+    <div class="label">Transformations</div>
+  </div>
+</div>
+
+<!-- ── MARQUEE ──────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span>No Pain No Gain</span><span class="dot">✦</span>
+    <span>Train Hard, Win Easy</span><span class="dot">✦</span>
+    <span>Your Body, Your Rules</span><span class="dot">✦</span>
+    <span>Push Beyond Limits</span><span class="dot">✦</span>
+    <span>Sweat is Fat Crying</span><span class="dot">✦</span>
+    <span>Consistency is King</span><span class="dot">✦</span>
+    <span>No Excuses</span><span class="dot">✦</span>
+    <!-- duplicate for seamless loop -->
+    <span>No Pain No Gain</span><span class="dot">✦</span>
+    <span>Train Hard, Win Easy</span><span class="dot">✦</span>
+    <span>Your Body, Your Rules</span><span class="dot">✦</span>
+    <span>Push Beyond Limits</span><span class="dot">✦</span>
+    <span>Sweat is Fat Crying</span><span class="dot">✦</span>
+    <span>Consistency is King</span><span class="dot">✦</span>
+    <span>No Excuses</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- ── TIMING ──────────────────────────────────────────── -->
+<section id="timing">
+  <div class="reveal">
+    <p class="section-eyebrow">Open Hours</p>
+    <h2 class="section-title">GYM <span>TIMINGS</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">We're open almost every day — no excuse to skip leg day!</p>
+  </div>
+  <div class="timing-grid reveal">
+    <div class="timing-card">
+      <div class="timing-day">Monday – Friday</div>
+      <div class="timing-hours">5:00 AM – 10:00 PM</div>
+      <div class="timing-note">Weekday warriors welcome</div>
+    </div>
+    <div class="timing-card highlight">
+      <div class="timing-day">Saturday</div>
+      <div class="timing-hours">5:00 AM – 8:00 PM</div>
+      <div class="timing-note">Peak hours 7–10 AM</div>
+    </div>
+    <div class="timing-card">
+      <div class="timing-day">Sunday</div>
+      <div class="timing-hours">6:00 AM – 12:00 PM</div>
+      <div class="timing-note">Morning sessions only</div>
+    </div>
+    <div class="timing-card">
+      <div class="timing-day">Public Holidays</div>
+      <div class="timing-hours">7:00 AM – 12:00 PM</div>
+      <div class="timing-note">Check our Instagram for updates</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLANS ──────────────────────────────────────────── -->
+<section id="plans">
+  <div class="reveal">
+    <p class="section-eyebrow">Membership</p>
+    <h2 class="section-title">CHOOSE YOUR <span>PLAN</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Flexible plans designed for every fitness journey — beginner to beast.</p>
+  </div>
+  <div class="plans-grid reveal">
+    <div class="plan-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">₹799 <small>/month</small></div>
+      <div class="plan-duration">Monthly Plan</div>
+      <ul class="plan-features">
+        <li><span class="chk">✓</span> Access to all machines</li>
+        <li><span class="chk">✓</span> Locker facility</li>
+        <li><span class="chk">✓</span> 1 Diet consultation</li>
+        <li><span class="chk">–</span> Personal trainer</li>
+        <li><span class="chk">–</span> Protein shake included</li>
+      </ul>
+      <a href="#join" class="plan-cta">Get Started</a>
+    </div>
+    <div class="plan-card popular">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Warrior</div>
+      <div class="plan-price">₹3,999 <small>/6 months</small></div>
+      <div class="plan-duration">Semi-Annual Plan</div>
+      <ul class="plan-features">
+        <li><span class="chk">✓</span> Access to all machines</li>
+        <li><span class="chk">✓</span> Locker + Shower</li>
+        <li><span class="chk">✓</span> Monthly diet plan</li>
+        <li><span class="chk">✓</span> 2 PT sessions/month</li>
+        <li><span class="chk">–</span> Protein shake included</li>
+      </ul>
+      <a href="#join" class="plan-cta">Get Started</a>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Champion</div>
+      <div class="plan-price">₹6,999 <small>/year</small></div>
+      <div class="plan-duration">Annual Plan — Best Value</div>
+      <ul class="plan-features">
+        <li><span class="chk">✓</span> Access to all machines</li>
+        <li><span class="chk">✓</span> Locker + Shower</li>
+        <li><span class="chk">✓</span> Weekly diet plan</li>
+        <li><span class="chk">✓</span> 4 PT sessions/month</li>
+        <li><span class="chk">✓</span> 1 Protein shake/day</li>
+      </ul>
+      <a href="#join" class="plan-cta">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── TRAINERS ──────────────────────────────────────────── -->
+<section id="trainers">
+  <div class="reveal">
+    <p class="section-eyebrow">Our Experts</p>
+    <h2 class="section-title">MEET THE <span>COMMANDERS</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Elite trainers who've walked the path before you. They don't just coach — they transform.</p>
+  </div>
+  <div class="trainers-grid reveal">
+    <div class="trainer-card">
+      <img class="trainer-img" src="st,small,507x507-pad,600x600,f8f8f8.u2.jpg" alt="Arjun Patil" />
+      <div class="trainer-body">
+        <div class="trainer-name">your name</div>
+        <div class="trainer-title">Head Trainer & Strength Coach</div>
+        <p class="trainer-bio">12 years of experience in strength & conditioning. Former state-level powerlifter turned certified NSCA trainer. Known for building raw strength from scratch.</p>
+        <div class="trainer-tags"><span>Powerlifting</span><span>Strength</span><span>Bulk</span></div>
+      </div>
+    </div>
+    <div class="trainer-card">
+      <img class="trainer-img" src="st,small,507x507-pad,600x600,f8f8f8.u2.jpg" alt="Priya Deshmukh" />
+      <div class="trainer-body">
+        <div class="trainer-name">your name</div>
+        <div class="trainer-title">Nutrition & Fat Loss Expert</div>
+        <p class="trainer-bio">Certified dietitian & fitness coach with 7 years experience. Specializes in sustainable fat loss, female fitness, and custom diet plans. She believes food is medicine.</p>
+        <div class="trainer-tags"><span>Fat Loss</span><span>Nutrition</span><span>HIIT</span></div>
+      </div>
+    </div>
+    <div class="trainer-card">
+      <img class="trainer-img" src="st,small,507x507-pad,600x600,f8f8f8.u2.jpg" alt="Rohit Shinde" />
+      <div class="trainer-body">
+        <div class="trainer-name">your name</div>
+        <div class="trainer-title">Cardio & Calisthenics Coach</div>
+        <p class="trainer-bio">8 years mastering bodyweight movement and cardio science. Ex-army fitness instructor. If you want endurance and agility, Rohit is your guy.</p>
+        <div class="trainer-tags"><span>Calisthenics</span><span>Cardio</span><span>Endurance</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ──────────────────────────────────────────── -->
+<section id="testimonials">
+  <div class="reveal">
+    <p class="section-eyebrow">Real Results (Collect from your Google Maps profile)</p>
+    <h2 class="section-title">WHAT PEOPLE <span>SAY</span></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="testi-grid reveal">
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <div class="testi-quote">"</div>
+      <p class="testi-text">This gym is great. All the machines here are in very good condition and clean. The trainers give proper guidance with personal attention to each exercise. The atmosphere is very energetic, which makes working out a lot of fun. This is a great place for fitness.</p>
+      <div class="testi-person">
+        <img class="testi-avatar" src="unnamed.png" alt="Suhani" />
+        <div>
+          <div class="testi-name">Suhani Bane</div>
+          <div class="testi-role"></div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <div class="testi-quote">"</div>
+      <p class="testi-text">Amazing gym with a peaceful and refreshing atmosphere. Surrounded by trees and plants, it feels great to work out here. The gym has plenty of open space, making it perfect for weightlifting, functional training, and running. The environment is clean, spacious, and motivating. Highly recommended for anyone looking for a great fitness experience</p>
+      <div class="testi-person">
+        <img class="testi-avatar" src="unnamed (1).png" alt="Amit" />
+        <div>
+          <div class="testi-name">Amit Rathod</div>
+          <div class="testi-role"></div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <div class="testi-quote">"</div>
+      <p class="testi-text">I’ve had a great experience at Niwara Gym by V3 Fitness. It’s one of the best gyms in the area with a very positive atmosphere.
+I love the eco-friendly setup  fresh air, plenty of plants, and a calm, peaceful vibe that keeps me motivated.
+The training team here is excellent.(Sir Sunil, Sir Harshad, Sir Sarang, and Sir Pradeep )are very supportive and knowledgeable. They guide properly and help you stay consistent with your fitness goals.
+Highly recommended for anyone looking to stay fit.</p>
+      <div class="testi-person">
+        <img class="testi-avatar" src="unnamed (2).png" alt="Ganesh" />
+        <div>
+          <div class="testi-name">Ganesh kedar</div>
+          <div class="testi-role"></div> 
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRODUCTS ──────────────────────────────────────────── -->
+<section id="products">
+  <div class="reveal">
+    <p class="section-eyebrow">Gym Store</p>
+    <h2 class="section-title">FUEL YOUR <span>GAINS</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Premium supplements & gear, available directly at SakriGym. Order below and we'll contact you!</p>
+  </div>
+  <div class="products-grid reveal">
+    <div class="product-card">
+      <img class="product-img" src="https://placehold.co/400x280/1a0000/dc0000?text=Whey+Protein" alt="Whey Protein" />
+      <div class="product-body">
+        <div class="product-name">Whey Protein</div>
+        <p class="product-benefit">24g protein per scoop. Builds muscle faster, aids recovery. Chocolate & vanilla flavors available.</p>
+        <div class="product-price">₹2,499 <small>/ 1kg</small></div>
+        <button class="btn-order" onclick="openOrder('Whey Protein – ₹2,499')">Order on WhatsApp</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://placehold.co/400x280/001a00/00dc44?text=Pre-Workout" alt="Pre-Workout" />
+      <div class="product-body">
+        <div class="product-name">Pre-Workout</div>
+        <p class="product-benefit">Explosive energy & focus for hardcore sessions. Caffeine + Beta-Alanine formula. 30 servings.</p>
+        <div class="product-price">₹1,799 <small>/ pack</small></div>
+        <button class="btn-order" onclick="openOrder('Pre-Workout – ₹1,799')">Order on WhatsApp</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://placehold.co/400x280/0a0a1a/3333dc?text=Creatine" alt="Creatine" />
+      <div class="product-body">
+        <div class="product-name">Creatine Monohydrate</div>
+        <p class="product-benefit">Pure 99.9% Creatine. Increases strength, power & lean muscle mass. 300g jar — 60 servings.</p>
+        <div class="product-price">₹999 <small>/ 300g</small></div>
+        <button class="btn-order" onclick="openOrder('Creatine Monohydrate – ₹999')">Order on WhatsApp</button>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://placehold.co/400x280/1a1500/dcb300?text=Gym+Gloves" alt="Gym Gloves" />
+      <div class="product-body">
+        <div class="product-name">Pro Gym Gloves</div>
+        <p class="product-benefit">Anti-slip leather grip. Wrist support included. Protects palms & improves lifting performance.</p>
+        <div class="product-price">₹449 <small>/ pair</small></div>
+        <button class="btn-order" onclick="openOrder('Pro Gym Gloves – ₹449')">Order on WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ORDER MODAL ──────────────────────────────────────────── -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOrder()">✕</button>
+    <h3>Quick Order</h3>
+    <p class="modal-prod" id="modalProdName">Product Name</p>
+    <input type="text" id="orderName" placeholder="Your Full Name" />
+    <input type="tel" id="orderPhone" placeholder="Your Phone Number (+91...)" />
+    <div class="modal-btns">
+      <button class="btn-wa" onclick="sendOrderWA()">📲 Send on WhatsApp</button>
+      <button class="btn-cancel" onclick="closeOrder()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PDF + WHY US ──────────────────────────────────────────── -->
+<section id="extras">
+  <div class="reveal">
+    <p class="section-eyebrow">Free Resources</p>
+    <h2 class="section-title">LEVEL UP YOUR <span>KNOWLEDGE</span></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="extras-grid reveal">
+    <div class="pdf-box">
+      <div class="pdf-icon">📋</div>
+      <h3>FREE WORKOUT PLAN</h3>
+      <p>Download our complete 12-week beginner-to-advanced workout plan. Crafted by our head trainer Arjun Patil. Covers chest, back, legs, arms & cardio days.</p>
+      <!-- Replace href with actual PDF link -->
+      <a href="" download class="btn-download">I attach your plan to download</a>
+    </div>
+    <div class="why-box">
+      <h3>WHY Niwara Gym ?</h3>
+      <div class="why-item">
+        <div class="why-icon">🏋️</div>
+        <div class="why-text">
+          <h4>State-of-the-Art Equipment</h4>
+          <p>Latest machines from top brands. No broken equipment, no waiting in lines.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🥗</div>
+        <div class="why-text">
+          <h4>Custom Diet Plans</h4>
+          <p>Personalized nutrition guidance included with every Warrior & Champion plan.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🔒</div>
+        <div class="why-text">
+          <h4>Safe & Clean Environment</h4>
+          <p>Daily sanitization. Separate locker rooms. CCTV monitored 24/7.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🤝</div>
+        <div class="why-text">
+          <h4>Community That Pushes You</h4>
+          <p>Join 450+ members who show up every day and hold each other accountable.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MAP ──────────────────────────────────────────── -->
+<section id="map-section">
+  <div class="reveal">
+    <p class="section-eyebrow">Find Us</p>
+    <h2 class="section-title">OUR <span>LOCATION</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">We're right in the heart of pune. Come visit us — the first tour is free!</p>
+  </div>
+  <div class="map-wrap reveal">
+    <!-- Replace src with actual Google Maps embed URL -->
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d242140.34221548887!2d73.68250927641928!3d18.5088796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bfb5120c77a5%3A0xfb86aa794cced649!2sNiwara%20Gym%20by%20V3%20Fitness!5e0!3m2!1sen!2sin!4v1785119910169!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      allowfullscreen="" loading="lazy" title="Niwara Gym Location">
+    </iframe>
+  </div>
+  <a href="https://maps.app.goo.gl/4LScC7uiMosAb3Zs5" target="_blank" class="map-link">
+    Open in Google Maps →
+  </a>
+</section>
+
+<!-- ── JOIN FORM ──────────────────────────────────────────── -->
+<section id="join">
+  <div class="join-grid">
+    <div class="join-left reveal">
+      <h2>READY TO <span>JOIN</span> THE SQUAD?</h2>
+      <p>Fill the form and we'll reach out to you on WhatsApp within 24 hours. No commitment needed — just a conversation.</p>
+      <br />
+      <p style="color:var(--red);font-weight:600;font-size:0.95rem;">📞 Or call us directly:<br /><span style="color:var(--white);font-size:1.1rem;">+91 9860330423</span></p>
+    </div>
+    <div class="join-right reveal">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="jName" placeholder="Arjun Sharma" />
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="jPhone" placeholder="+91 98765 43210" />
+      </div>
+      <div class="form-group">
+        <label>Choose Your Plan</label>
+        <select id="jPlan">
+          <option value="">Select a plan...</option>
+          <option>Starter – ₹799/month</option>
+          <option>Warrior – ₹3,999/6 months</option>
+          <option>Champion – ₹6,999/year</option>
+          <option>Just Exploring</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Fitness Goal</label>
+        <textarea id="jMsg" rows="3" placeholder="e.g. I want to lose 10kg in 3 months..."></textarea>
+      </div>
+      <button class="btn-send-wa" onclick="sendJoinWA()">
+        📲 Send via WhatsApp
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── INSTAGRAM BAR ──────────────────────────────────────────── -->
+<div class="insta-bar">
+  <p>📸 Follow us for daily workout tips, transformation posts & offers</p>
+  <!-- Replace with owner's Instagram URL -->
+  <a href="https://www.instagram.com/niwara_gym_official" target="_blank" class="btn-insta">@niwara_gym_official</a>
+</div>
+
+<!-- ── FOOTER ──────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">NIWARA<span>GYM</span></div>
+  <div class="footer-copy">© 2025 Niwara Gym. All rights reserved.</div>
+  <a href="https://www.instagram.com/nexus.labs14" target="_blank" class="nexus-badge">
+    <div class="nexus-dot"></div>
+    <span>Made by</span>
+    <strong>Kunal Mali </strong>
+  </a>
+</footer>
+
+<script>
+  /* ── HAMBURGER ── */
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  /* ── COUNTER ANIMATION ── */
+  function animateCounters() {
+    document.querySelectorAll('.num[data-target]').forEach(el => {
+      const target = +el.dataset.target;
+      let count = 0;
+      const step = Math.max(1, Math.floor(target / 60));
+      const timer = setInterval(() => {
+        count = Math.min(count + step, target);
+        el.textContent = count + (target >= 100 ? '+' : '');
+        if (count >= target) clearInterval(timer);
+      }, 25);
+    });
+  }
+  const statsBar = document.querySelector('.stats-bar');
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { animateCounters(); observer.disconnect(); }
+  }, { threshold: 0.5 });
+  observer.observe(statsBar);
+
+  /* ── SCROLL REVEAL ── */
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => revealObserver.observe(r));
+
+  /* ── ORDER MODAL ── */
+  let currentProduct = '';
+  function openOrder(product) {
+    currentProduct = product;
+    document.getElementById('modalProdName').textContent = product;
+    document.getElementById('orderName').value = '';
+    document.getElementById('orderPhone').value = '';
+    document.getElementById('orderModal').classList.add('open');
+  }
+  function closeOrder() {
+    document.getElementById('orderModal').classList.remove('open');
+  }
+  function sendOrderWA() {
+    const name = document.getElementById('orderName').value.trim();
+    const phone = document.getElementById('orderPhone').value.trim();
+    if (!name || !phone) { alert('Please fill in both name and phone number.'); return; }
+    // ⚠️ REPLACE 919999999999 with owner's actual WhatsApp number
+    const ownerWA = '919999999999';
+    const msg = encodeURIComponent(`🛒 *New Order - Niwara Gym*\n\n*Product:* ${currentProduct}\n*Customer:* ${name}\n*Contact:* ${phone}\n\nPlease confirm this order.`);
+    window.open(`https://wa.me/${ownerWA}?text=${msg}`, '_blank');
+    closeOrder();
+  }
+  document.getElementById('orderModal').addEventListener('click', function(e) {
+    if (e.target === this) closeOrder();
+  });
+
+  /* ── JOIN FORM → WHATSAPP ── */
+  function sendJoinWA() {
+    const name = document.getElementById('jName').value.trim();
+    const phone = document.getElementById('jPhone').value.trim();
+    const plan = document.getElementById('jPlan').value;
+    const msg_text = document.getElementById('jMsg').value.trim();
+    if (!name || !phone) { alert('Please enter your name and phone number.'); return; }
+    // ⚠️ REPLACE 919999999999 with owner's actual WhatsApp number
+    const ownerWA = '919999999999';
+    const message = encodeURIComponent(
+      `🏋️ *New Membership Enquiry - Niwara Gym*\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Plan:* ${plan || 'Not selected'}\n*Goal:* ${msg_text || 'Not specified'}`
+    );
+    window.open(`https://wa.me/${ownerWA}?text=${message}`, '_blank');
+  }
+</script>
+</body>
+</html>
